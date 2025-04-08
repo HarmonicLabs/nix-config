@@ -47,36 +47,54 @@
           };
         };
 
-        devenv.shells.default = {
-          devenv.root =
-            let
-              devenvRootFileContent = builtins.readFile devenv-root.outPath;
-            in
-            pkgs.lib.mkIf (devenvRootFileContent != "") devenvRootFileContent;
+        devenv.shells = rec {
+          common = {
+            name = "gerolamo";
+            devenv.root =
+              let
+                devenvRootFileContent = builtins.readFile devenv-root.outPath;
+              in
+              pkgs.lib.mkIf (devenvRootFileContent != "") devenvRootFileContent;
 
-          name = "gerolamo";
+            # https://devenv.sh/reference/options/
+            packages = with pkgs; [
+              clang
+              clangStdenv
+              gnumake
+              python3
+            ];
 
-          languages = {
-            javascript = {
-              enable = true;
-              bun = {
+            languages = {
+              typescript.enable = true;
+              nix.enable = true;
+            };
+          };
+          nodejs = {         
+            languages = {
+              javascript = {
                 enable = true;
-                # install.enable = true;
+                npm = {
+                  enable = true;
+                  package = pkgs.nodejs_23;
+                };
               };
             };
-            typescript.enable = true;
-            nix.enable = true;
           };
 
-          # https://devenv.sh/reference/options/
-          packages = with pkgs; [
-            clang
-            clangStdenv
-            gnumake
-            python3
-          ];
-        };
+          bun = {
+            languages = {
+              javascript = {
+                enable = true;
+                bun = {
+                  enable = true;
+                  install.enable = true;
+                };
+              };
+            };
+          };
 
+          default = bun;
+        };
       };
       flake = {
         # The usual flake attributes can be defined here, including system-

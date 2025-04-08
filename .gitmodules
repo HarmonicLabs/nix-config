@@ -1,0 +1,3 @@
+[submodule "gerolamo"]
+	path = gerolamo
+	url = https://github.com/HarmonicLabs/gerolamo.git
